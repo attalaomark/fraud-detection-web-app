@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Transaction - Fraud Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #00b4db, #0083b0);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Enhanced floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            width: 10px;
+            height: 10px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            width: 15px;
+            height: 15px;
+            top: 60%;
+            left: 70%;
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(3) {
+            width: 8px;
+            height: 8px;
+            top: 80%;
+            left: 20%;
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(4) {
+            width: 12px;
+            height: 12px;
+            top: 30%;
+            left: 80%;
+            animation-delay: -6s;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1); 
+                opacity: 0.3;
+            }
+            25% { 
+                transform: translateY(-30px) rotate(90deg) scale(1.2); 
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateY(-60px) rotate(180deg) scale(0.8); 
+                opacity: 0.5;
+            }
+            75% { 
+                transform: translateY(-30px) rotate(270deg) scale(1.1); 
+                opacity: 0.9;
+            }
+        }
+
+        /* Geometric shapes background */
+        .geometric-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .geo-shape {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: rotate 20s linear infinite;
+        }
+
+        .geo-shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            right: 15%;
+            border-radius: 20px;
+            animation-delay: 0s;
+        }
+
+        .geo-shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 10%;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation-delay: -5s;
+        }
+
+        .geo-shape:nth-child(3) {
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 5%;
+            border-radius: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Container - Centered without navbar spacing */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.03), transparent);
+            animation: rotate 30s linear infinite;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h2 i {
+            color: #667eea;
+            font-size: 1.8rem;
+        }
+
+        .page-header .subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Security Note */
+        .security-note {
+            background: rgba(255, 243, 205, 0.9);
+            border: 1px solid rgba(255, 234, 167, 0.8);
+            color: #856404;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        .security-note i {
+            font-size: 1.2rem;
+            color: #ffc107;
+        }
+
+        /* Transaction Details */
+        .transaction-details {
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            color: #343a40;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .detail-value.amount {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .detail-value.account {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+
+        /* PIN Input Section */
+        .pin-section {
+            background: rgba(248, 249, 250, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        .pin-section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 0.9rem 0.9rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 1rem;
+            color: #6c757d;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        .pin-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.75rem;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            animation: slideUp 0.8s ease-out 0.8s both;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-back::before {
+            background: #545b62;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-confirm::before {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 1.5rem;
+            animation: slideUp 0.8s ease-out 0.1s both;
+        }
+
+        .flash-message {
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .flash-success {
+            background: rgba(212, 237, 218, 0.95);
+            color: #155724;
+        }
+
+        .flash-error {
+            background: rgba(248, 215, 218, 0.95);
+            color: #721c24;
+        }
+
+        .flash-warning {
+            background: rgba(255, 243, 205, 0.95);
+            color: #856404;
+        }
+
+        .flash-info {
+            background: rgba(209, 236, 241, 0.95);
+            color: #0c5460;
+        }
+
+        /* Loading State */
+        .btn.loading {
+            color: transparent;
+            position: relative;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-top: -0.6rem;
+            margin-left: -0.6rem;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: spin 0.75s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .transaction-details,
+            .pin-section {
+                padding: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                max-width: none;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <div class="geometric-bg">
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="content">
+                <div class="page-header">
+                    <h2><i class="fas fa-check-circle"></i> Confirm Transaction</h2>
+                    <p class="subtitle">Please review the transaction details and enter your PIN to proceed.</p>
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">
+                                    <i class="fas fa-info-circle"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Security Note -->
+                <div class="security-note">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>For your security, please verify the transaction details before proceeding.</span>
+                </div>
+
+                <!-- Transaction Details -->
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Rekening Pengirim</span>
+                        <span class="detail-value account">{{ transaction_data.sender_account }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nama Pengirim</span>
+                        <span class="detail-value">{{ transaction_data.sender_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rekening Tujuan</span>
+                        <span class="detail-value account">{{ transaction_data.recipient_account }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nama Penerima</span>
+                        <span class="detail-value">{{ transaction_data.recipient_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nominal</span>
+                        <span class="detail-value amount">
+                            Rp {{
+                              "{:,.2f}".format(transaction_data.amount)
+                              .replace(",", "X")
+                              .replace(".", ",")
+                              .replace("X", ".")
+                            }}
+                          </span>
+                    </div>
+                    {% if transaction_data.message %}
+                    <div class="detail-row">
+                        <span class="detail-label">Berita</span>
+                        <span class="detail-value">{{ transaction_data.message }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- PIN Input Section -->
+                <div class="pin-section">
+                    <h3><i class="fas fa-lock"></i> Enter Your PIN</h3>
+                    <form method="POST" id="confirmForm">
+                        <div class="form-group">
+                            <label for="pin">Transaction PIN</label>
+                            <div class="input-group">
+                                <input type="password" name="pin" id="pin" 
+                                       placeholder="Enter your PIN" required 
+                                       autocomplete="off" maxlength="10">
+                                <i class="fas fa-key"></i>
+                            </div>
+                        </div>
+                        <div class="pin-hint">
+                            Enter your PIN to authorize this transaction
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="actions">
+                    <a href="{{ url_for('transaction') }}" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back</span>
+                    </a>
+                    <button type="submit" form="confirmForm" class="btn btn-confirm" id="confirmBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form elements
+        const confirmBtn = document.getElementById('confirmBtn');
+        const confirmForm = document.getElementById('confirmForm');
+        const pinInput = document.getElementById('pin');
+
+        // PIN input validation
+        pinInput.addEventListener('input', function() {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Enable/disable confirm button based on PIN input
+            if (this.value.length > 0) {
+                confirmBtn.disabled = false;
+            } else {
+                confirmBtn.disabled = true;
+            }
+        });
+
+        // Form submission
+        confirmForm.addEventListener('submit', function(e) {
+            const pin = pinInput.value.trim();
+            
+            if (pin.length === 0) {
+                e.preventDefault();
+                alert('Please enter your PIN');
+                pinInput.focus();
+                return false;
+            }
+
+            // Confirm transaction
+            if (!confirm('Are you sure you want to proceed with this transaction?')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Show loading state
+            confirmBtn.classList.add('loading');
+            confirmBtn.disabled = true;
+        });
+
+        // Logout confirmation
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = this.href;
+            }
+        });
+
+        // Auto-focus PIN input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            pinInput.focus();
+        });
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

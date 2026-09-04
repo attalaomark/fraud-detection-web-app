@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - Fraud Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #00b4db, #0083b0);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Enhanced floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            width: 10px;
+            height: 10px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            width: 15px;
+            height: 15px;
+            top: 60%;
+            left: 70%;
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(3) {
+            width: 8px;
+            height: 8px;
+            top: 80%;
+            left: 20%;
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(4) {
+            width: 12px;
+            height: 12px;
+            top: 30%;
+            left: 80%;
+            animation-delay: -6s;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1); 
+                opacity: 0.3;
+            }
+            25% { 
+                transform: translateY(-30px) rotate(90deg) scale(1.2); 
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translateY(-60px) rotate(180deg) scale(0.8); 
+                opacity: 0.5;
+            }
+            75% { 
+                transform: translateY(-30px) rotate(270deg) scale(1.1); 
+                opacity: 0.9;
+            }
+        }
+
+        /* Geometric shapes background */
+        .geometric-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .geo-shape {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: rotate 20s linear infinite;
+        }
+
+        .geo-shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            right: 15%;
+            border-radius: 20px;
+            animation-delay: 0s;
+        }
+
+        .geo-shape:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 10%;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation-delay: -5s;
+        }
+
+        .geo-shape:nth-child(3) {
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 5%;
+            border-radius: 50%;
+            animation-delay: -10s;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* White Header Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transform: scale(1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .logo-container {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            box-shadow: 0 10px 25px rgba(0, 180, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        }
+
+        .logo-container i {
+            font-size: 1.5rem;
+            color: white;
+            z-index: 1;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            color: #333;
+            text-shadow: none;
+            letter-spacing: 1px;
+        }
+
+        .navbar-nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: #333;
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .nav-item a.active {
+            color: #333;
+            background: rgba(0, 0, 0, 0.08);
+            font-weight: 700;
+        }
+
+        .nav-item a.logout {
+            background: transparent;
+            color: #666;
+            margin-left: 16px;
+        }
+
+        .nav-item a.logout:hover {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            padding: 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1.2s ease-out;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 180, 219, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+            to { text-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 30px rgba(0, 180, 219, 0.5); }
+        }
+
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-item label { 
+            font-weight: 600; 
+            color: #333; 
+            font-size: 1rem;
+        }
+
+        .filter-item select { 
+            padding: 0.8rem 1.5rem; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 15px; 
+            background-color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .filter-item select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-body {
+            padding: 0;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transaction-table th, .transaction-table td {
+            padding: 1.5rem 2rem;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .transaction-table thead {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .transaction-table th {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .transaction-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .transaction-table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: scale(1.01);
+        }
+
+        .recipient-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+        }
+
+        .recipient-icon { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            color: white; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            flex-shrink: 0; 
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .recipient-details .name { 
+            color: #2d3748; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+        }
+
+        .recipient-details .account { 
+            color: #718096; 
+            font-size: 0.9rem; 
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+
+        .amount { 
+            font-weight: 700; 
+            font-size: 1.2rem; 
+        }
+
+        .amount.negative { 
+            color: #dc3545; 
+        }
+
+        .amount.positive { 
+            color: #28a745; 
+        }
+
+        .message-col {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .transaction-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+            font-weight: 600;
+            background: #f8f9fa;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+        }
+
+        .transaction-date {
+            color: #495057;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .btn-detail {
+            font-size: 0.9rem;
+            padding: 0.6rem 1.5rem;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-detail:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #495057;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 2rem;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .flash-message {
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .flash-success {
+            background: rgba(212, 237, 218, 0.9);
+            color: #155724;
+        }
+
+        .flash-error {
+            background: rgba(248, 215, 218, 0.9);
+            color: #721c24;
+        }
+
+        .flash-warning {
+            background: rgba(254, 252, 191, 0.9);
+            color: #d69e2e;
+        }
+
+        .flash-info {
+            background: rgba(209, 236, 241, 0.9);
+            color: #0c5460;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .navbar-nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-container {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .transaction-table {
+                font-size: 0.9rem;
+            }
+
+            .transaction-table th,
+            .transaction-table td {
+                padding: 1rem;
+            }
+
+            .recipient-info {
+                gap: 0.75rem;
+            }
+
+            .recipient-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .filter-section {
+                padding: 1.5rem;
+            }
+
+            .filter-item {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .filter-item select {
+                min-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+            <img src="/static/asset/logo.png" alt="FINS Logo">
+            <h1>FINS</h1>
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="{{ url_for('dashboard') }}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('transaction') }}">Transaction</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('history') }}" class="active">History</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('info') }}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('logout') }}" id="logoutBtn">Logout</a>
+            </li>
+        </ul>
+    </header>
+
+    <div class="main-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <i class="fas fa-info-circle"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="page-header">
+            <h1><i class="fas fa-history"></i> Transaction History</h1>
+            <div class="filter-item">
+                <label for="dateRange">Show:</label>
+                <select id="dateRange">
+                    <option>Last 7 days</option>
+                    <option selected>Last 30 days</option>
+                    <option>All transactions</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-body">
+                {% if transactions and transactions|length > 0 %}
+                    <table class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>ID Transaksi</th>
+                                <th>Tanggal</th>
+                                <th>Penerima</th>
+                                <th>Nominal</th>
+                                <th>Berita</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>
+                                    <span class="transaction-id">{{ transaction.transaction_id }}</span>
+                                </td>
+                                <td>
+                                    <span class="transaction-date">
+                                        {% if transaction.transaction_date %}
+                                            {{ transaction.transaction_date.strftime('%B %d, %Y') if transaction.transaction_date.strftime else transaction.transaction_date }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="recipient-info">
+                                        <div class="recipient-icon">
+                                            {% if transaction.nomor_rekening_penerima == user_account %}
+                                                <i class="fas fa-arrow-down"></i>
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="recipient-details">
+                                            <div class="name">
+                                                {% if transaction.nomor_rekening_penerima == user_account %}
+                                                    Transfer Masuk
+                                                {% else %}
+                                                    {{ transaction.recipient_name or 'Unknown Recipient' }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="account">
+                                                {% if transaction.nomor_rekening_penerima == user_account %}
+                                                    From: {{ transaction.nomor_rekening_pengirim }}
+                                                {% else %}
+                                                    To: {{ transaction.nomor_rekening_penerima }}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="amount {% if transaction.nomor_rekening_penerima == user_account %}positive{% else %}negative{% endif %}">
+                                        {% if transaction.nomor_rekening_penerima == user_account %}
+                                            +Rp {{ "%.2f"|format(transaction.amount) }}
+                                        {% else %}
+                                            -Rp {{ "%.2f"|format(transaction.amount) }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="message-col">
+                                        {{ transaction.message if transaction.message else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('transaction_detail', transaction_id=transaction.transaction_id) }}" class="btn-detail">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <h3>No Transactions Found</h3>
+                        <p>You haven't made any transactions yet.</p>
+                        <a href="{{ url_for('transaction') }}" class="btn-primary">
+                            <i class="fas fa-plus"></i> Make Your First Transaction
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logout confirmation
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = this.href;
+            }
+        });
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }, 5000);
+
+        // Filter functionality (basic)
+        document.getElementById('dateRange').addEventListener('change', function() {
+            // This could be enhanced to actually filter transactions
+            console.log('Filter changed to:', this.value);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Transaction - Fraud Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #1e3c72, #2a5298, #00b4db, #0083b0);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .navbar:hover {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transform: scale(1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand h1 {
+                font-size: 1.8rem;
+                font-weight: 800;
+                margin: 0;
+                color: #333;
+                text-shadow: none;
+                letter-spacing: 1px;
+        }
+
+        .navbar-nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item a {
+                text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: #333;
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .nav-item a.active {
+            color: #333;
+            background: rgba(0, 0, 0, 0.08);
+            font-weight: 700;
+        }
+
+        .nav-item a.logout {
+            background: transparent;
+            color: #666;
+            margin-left: 16px;
+        }
+
+        .nav-item a.logout:hover {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% 0; }
+            50% { background-position: -200% 0; }
+        }
+
+        .content {
+            padding: 3rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        .account-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        .account-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .account-display .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .account-display .number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1.25rem 3.5rem 1.25rem 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 1.25rem;
+            color: #a0aec0;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .input-group input:focus + i {
+            color: #667eea;
+        }
+
+        .amount-input-container {
+            position: relative;
+        }
+
+        .amount-validation {
+            position: absolute;
+            right: 3.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .amount-validation.valid {
+            color: #48bb78;
+            animation: bounceIn 0.5s ease;
+        }
+
+        .amount-validation.invalid {
+            color: #f56565;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translateY(-50%) scale(0); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            25% { transform: translateY(-50%) translateX(-5px); }
+            75% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: currentColor;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #c53030;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fefcbf, #faf089);
+            color: #d69e2e;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #2f855a;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .flash-message {
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .flash-success {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #2f855a;
+        }
+
+        .flash-error {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #c53030;
+        }
+
+        .flash-warning {
+            background: linear-gradient(135deg, #fefcbf, #faf089);
+            color: #d69e2e;
+        }
+
+        .flash-info {
+            background: linear-gradient(135deg, #bee3f8, #90cdf4);
+            color: #2c5282;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid #e2e8f0;
+            animation: fadeIn 0.8s ease-out 0.8s both;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: 2px solid transparent;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn.loading {
+            pointer-events: none;
+        }
+
+        .btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .content {
+                padding: 2rem;
+            }
+            
+            .page-header h2 {
+                font-size: 2rem;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .navbar-nav {
+                gap: 1rem;
+            }
+            
+            .nav-item a {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+            <img src="/static/asset/logo.png" alt="FINS Logo">
+            <h1>FINS</h1>
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="{{ url_for('dashboard') }}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('transaction') }}" class="active">Transaction</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('history') }}">History</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('info') }}">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('logout') }}" id="logoutBtn">Logout</a>
+            </li>
+        </ul>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="content">
+                <div class="page-header">
+                    <h2><i class="fas fa-exchange-alt"></i> Transfer Funds</h2>
+                    <p class="subtitle">Complete the fields below to send money securely.</p>
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">
+                                    <i class="fas fa-info-circle"></i>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Alert Container for Client-side validation -->
+                <div id="alertContainer">
+                    <div id="balanceAlert" class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Insufficient balance. Transaction amount exceeds available funds.</span>
+                    </div>
+                    <div id="recipientAlert" class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Cannot transfer to your own account.</span>
+                    </div>
+                </div>
+
+                <form method="POST" id="transactionForm">
+                    <!-- From Account Display -->
+                    <div class="account-display">
+                        <div class="label">From Account</div>
+                        <div class="number">{{ account_data.nomor_rekening }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient_account">Destination Account Number</label>
+                        <div class="input-group">
+                            <input type="text" name="recipient_account" id="recipient_account" 
+                                   placeholder="Enter recipient's 12-digit account number" required 
+                                   pattern="[0-9]{12}" 
+                                   title="Account number must be exactly 12 digits"
+                                   maxlength="12">
+                            <i class="fas fa-university"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Transfer Amount</label>
+                        <div class="input-group amount-input-container">
+                            <input type="number" step="10000" name="amount" id="amount" 
+                                   placeholder="0.00" required min="10000" max="{{ account_data.account_balance }}">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span id="amountValidation" class="amount-validation"></span>
+                        </div>
+                        <small class="form-text text-muted">
+                            Maximum: Rp {{
+                              "{:,.2f}".format(account_data.account_balance)
+                              .replace(",", "X")
+                              .replace(".", ",")
+                              .replace("X", ".")
+                            }}
+                          </small>                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message (Optional)</label>
+                        <div class="input-group">
+                            <input type="text" name="message" id="message" 
+                                   placeholder="e.g., Payment for invoice #123" maxlength="100">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <span>Cancel</span>
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="processBtn" disabled>
+                            <i class="fas fa-paper-plane"></i> 
+                            <span>Send Transfer</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get data from backend
+        const userAccountNumber = '{{ account_data.nomor_rekening }}';
+        const maxBalance = {{account_data.account_balance}};
+
+        // Form elements
+        const form = document.getElementById('transactionForm');
+        const amountInput = document.getElementById('amount');
+        const recipientInput = document.getElementById('recipient_account');
+        const processBtn = document.getElementById('processBtn');
+        const balanceAlert = document.getElementById('balanceAlert');
+        const recipientAlert = document.getElementById('recipientAlert');
+        const amountValidation = document.getElementById('amountValidation');
+
+        // Real-time amount validation
+        amountInput.addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            
+            if (amount > maxBalance) {
+                balanceAlert.classList.add('show');
+                amountValidation.innerHTML = '<i class="fas fa-times"></i>';
+                amountValidation.className = 'amount-validation invalid';
+                processBtn.disabled = true;
+            } else if (amount > 0) {
+                balanceAlert.classList.remove('show');
+                amountValidation.innerHTML = '<i class="fas fa-check"></i>';
+                amountValidation.className = 'amount-validation valid';
+                validateForm();
+            } else {
+                balanceAlert.classList.remove('show');
+                amountValidation.innerHTML = '';
+                amountValidation.className = 'amount-validation';
+                processBtn.disabled = true;
+            }
+        });
+
+        // Recipient account validation
+        recipientInput.addEventListener('input', function() {
+            const recipientAccount = this.value.trim();
+            
+            if (recipientAccount === userAccountNumber) {
+                recipientAlert.classList.add('show');
+                processBtn.disabled = true;
+            } else {
+                recipientAlert.classList.remove('show');
+                validateForm();
+            }
+        });
+
+        // Validate entire form
+        function validateForm() {
+            const amount = parseFloat(amountInput.value) || 0;
+            const recipient = recipientInput.value.trim();
+            
+            const isAmountValid = amount > 0 && amount <= maxBalance;
+            const isRecipientValid = recipient.length === 12 && recipient !== userAccountNumber;
+            
+            processBtn.disabled = !(isAmountValid && isRecipientValid);
+        }
+
+        // Format recipient account number input (only numbers)
+        recipientInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            const amount = parseFloat(amountInput.value) || 0;
+            const recipient = recipientInput.value.trim();
+
+            // Final validation before submission
+            if (amount > maxBalance) {
+                e.preventDefault();
+                balanceAlert.classList.add('show');
+                return false;
+            }
+
+            if (recipient === userAccountNumber) {
+                e.preventDefault();
+                recipientAlert.classList.add('show');
+                return false;
+            }
+
+            // Confirm transaction
+            const confirmMessage = `Are you sure you want to transfer $${amount.toFixed(2)} to account ${recipient}?`;
+            if (!confirm(confirmMessage)) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Show loading state
+            processBtn.classList.add('loading');
+            processBtn.disabled = true;
+        });
+
+        // Logout confirmation
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = this.href;
+            }
+        });
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

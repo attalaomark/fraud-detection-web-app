@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter OTP - Fraud Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .otp-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .otp-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .otp-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ffc107, #e0a800);
+        }
+
+        .otp-header {
+            margin-bottom: 2rem;
+        }
+
+        .otp-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: otpPulse 2s ease-in-out infinite;
+        }
+
+        .otp-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        @keyframes otpPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .otp-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 0.5rem;
+        }
+
+        .otp-subtitle {
+            color: #6c757d;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .email-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .otp-input-section {
+            margin-bottom: 2rem;
+        }
+
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #ffc107;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+            transform: scale(1.05);
+        }
+
+        .otp-hint {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .resend-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .resend-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .resend-btn:hover {
+            color: #0056b3;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 1rem;
+        }
+
+        .flash-message {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Loading State */
+        .btn.loading {
+            color: transparent;
+            position: relative;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-top: -0.625rem;
+            margin-left: -0.625rem;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: spin 0.75s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .otp-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .otp-input-container {
+                gap: 0.5rem;
+            }
+
+            .otp-input {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <div class="otp-card">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                <i class="fas fa-info-circle"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="otp-header">
+                <div class="otp-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h1 class="otp-title">MASUKKAN 4 KODE OTP</h1>
+                <p class="otp-subtitle">Masukkan kode verifikasi yang sudah dikirim ke Email Anda</p>
+            </div>
+
+            <div class="email-info">
+                <i class="fas fa-envelope"></i>
+                OTP telah dikirim ke: <strong>{{ user_email or session.user_data.email or 'your-email@example.com' }}</strong>
+            </div>
+
+            <form method="POST" id="otpForm">
+                <div class="otp-input-section">
+                    <div class="otp-input-container">
+                        <input type="text" class="otp-input" id="otp1" maxlength="1" pattern="[0-9]" required>
+                        <input type="text" class="otp-input" id="otp2" maxlength="1" pattern="[0-9]" required>
+                        <input type="text" class="otp-input" id="otp3" maxlength="1" pattern="[0-9]" required>
+                        <input type="text" class="otp-input" id="otp4" maxlength="1" pattern="[0-9]" required>
+                    </div>
+                    <div class="otp-hint">
+                        Masukkan 4 digit kode OTP
+                    </div>
+                    
+                    <!-- Hidden field to combine OTP -->
+                    <input type="hidden" name="otp" id="combinedOtp">
+                </div>
+
+                <div class="resend-section">
+                    <div class="resend-text">Tidak menerima kode?</div>
+                    <button type="button" class="resend-btn" id="resendBtn">
+                        Kirim Ulang OTP
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary" id="verifyBtn" disabled>
+                        <i class="fas fa-check"></i>
+                        <span>Verifikasi</span>
+                    </button>
+                    
+                    <a href="{{ url_for('cancel_transaction') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Kirim Ulang OTP</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // OTP Input Handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const combinedOtpField = document.getElementById('combinedOtp');
+        const otpForm = document.getElementById('otpForm');
+        const resendBtn = document.getElementById('resendBtn');
+
+        // Auto-focus next input and validate
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                // Auto-focus next input
+                if (this.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                validateOtp();
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            // Handle paste
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = e.clipboardData.getData('text');
+                const numbers = paste.replace(/[^0-9]/g, '').substring(0, 4);
+                
+                for (let i = 0; i < numbers.length && (index + i) < otpInputs.length; i++) {
+                    otpInputs[index + i].value = numbers[i];
+                }
+                
+                validateOtp();
+            });
+        });
+
+        // Validate OTP completion
+        function validateOtp() {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            
+            if (otp.length === 4) {
+                verifyBtn.disabled = false;
+                combinedOtpField.value = otp;
+            } else {
+                verifyBtn.disabled = true;
+                combinedOtpField.value = '';
+            }
+        }
+
+        // Form submission
+        otpForm.addEventListener('submit', function(e) {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            
+            if (otp.length !== 4) {
+                e.preventDefault();
+                alert('Silakan masukkan kode OTP 4 digit yang lengkap');
+                return;
+            }
+
+            // Show loading state
+            verifyBtn.classList.add('loading');
+            verifyBtn.disabled = true;
+        });
+
+        // Resend OTP
+        resendBtn.addEventListener('click', function() {
+            // Clear current OTP inputs
+            otpInputs.forEach(input => input.value = '');
+            validateOtp();
+            
+            // Redirect to resend OTP
+            window.location.href = '{{ url_for("resend_otp") }}';
+        });
+
+        // Auto-focus first OTP input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            otpInputs[0].focus();
+        });
+
+        // Hide flash messages after 5 seconds
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
