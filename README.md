@@ -216,7 +216,6 @@ These results describe the trained academic model and should not be generalized 
 ## Application Features
 
 The Flask application implements a simulated banking experience with:
-
 - User login
 - Dashboard with account balance and transaction overview
 - Transfer form
@@ -230,6 +229,86 @@ The Flask application implements a simulated banking experience with:
 - Transaction history
 - Supabase-backed account and transaction data
 - Model/database health-check endpoints
+
+---
+
+## Application Preview
+
+### Login
+
+<p align="center">
+  <img src="docs/screenshots/login.png"
+       alt="FINS Login Page"
+       width="900">
+</p>
+
+Users authenticate through the FINS login interface before accessing
+the transaction and fraud-detection workflow.
+
+### Dashboard
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png"
+       alt="FINS User Dashboard"
+       width="900">
+</p>
+
+The dashboard summarizes account balance, blocked transactions,
+transaction success rate, and total transaction activity.
+
+### Fund Transfer
+
+<p align="center">
+  <img src="docs/screenshots/transfer.png"
+       alt="FINS Fund Transfer"
+       width="900">
+</p>
+
+Users can initiate a transfer by entering the destination account,
+transaction amount, and an optional transaction message.
+
+### Transaction Confirmation
+
+<p align="center">
+  <img src="docs/screenshots/transaction-confirmation.png"
+       alt="FINS Transaction Confirmation"
+       width="900">
+</p>
+
+Transaction details are reviewed before the transfer is submitted
+for fraud-risk evaluation.
+
+### Fraud Detection
+
+<p align="center">
+  <img src="docs/screenshots/fraud-detected.png"
+       alt="FINS Fraud Detection Alert"
+       width="900">
+</p>
+
+When the model identifies a suspicious transaction, the application
+displays the fraud-risk score and triggers an additional verification step.
+
+### OTP Verification
+
+<p align="center">
+  <img src="docs/screenshots/otp-verification.png"
+       alt="FINS OTP Verification"
+       width="900">
+</p>
+
+Flagged transactions require OTP verification before they can proceed.
+
+### Transaction History
+
+<p align="center">
+  <img src="docs/screenshots/transaction-history.png"
+       alt="FINS Transaction History"
+       width="900">
+</p>
+
+Completed transactions can be reviewed through the transaction-history page,
+including transaction IDs, dates, amounts, and transaction details.
 
 ---
 
